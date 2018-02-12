@@ -1,0 +1,61 @@
+# Firewall configuration written by system-config-firewall
+*nat
+:PREROUTING ACCEPT [9885:679318]
+:POSTROUTING ACCEPT [17:1485]
+:OUTPUT ACCEPT [17:1485]
+#-A POSTROUTING -s 192.168.1.0/24 -o em1  -j SNAT --to-source 175.45.4.86
+#-A POSTROUTING -s 192.168.1.0/24 -o em1  -j MASQUERADE 
+#-A PREROUTING -p tcp -m tcp --dport 8080 -j REDIRECT --to-ports 443
+-A PREROUTING -p tcp -m tcp --dport 443  -j REDIRECT --to-ports 80
+-A PREROUTING -p tcp -m tcp --dport 8080 -j REDIRECT --to-ports 80
+-A PREROUTING -p tcp -m tcp --dport 18080 -j REDIRECT --to-ports 10080
+-A PREROUTING -p tcp -m tcp --dport 10443 -j REDIRECT --to-ports 10080
+COMMIT
+# Manual customization of this file is not recommended.
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+#-A INPUT -p gre -j ACCEPT
+
+-A INPUT -s 58.64.200.218 -j ACCEPT
+-A INPUT -s 119.28.7.210 -j ACCEPT
+-A INPUT -s 119.28.14.109 -j ACCEPT
+-A INPUT -s 119.28.7.153 -j ACCEPT
+-A INPUT -s 192.168.1.83 -j ACCEPT
+-A INPUT -s 192.168.1.10 -j ACCEPT
+-A INPUT -s 192.168.1.11 -j ACCEPT
+-A INPUT -s 175.45.4.58 -j ACCEPT
+-A INPUT -s 175.45.4.10 -j ACCEPT
+-A INPUT -s 175.45.4.11 -j ACCEPT
+
+#qing cloud server
+-A INPUT -s 209.9.106.124 -j ACCEPT
+-A INPUT -s 209.9.107.127 -j ACCEPT
+-A INPUT -s 209.9.106.124 -j ACCEPT
+-A INPUT -s 209.9.108.172 -j ACCEPT
+-A INPUT -s 207.226.141.226 -j ACCEPT
+
+
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 1104 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8090 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 10080 -j ACCEPT
+# another webport for nginx
+-A INPUT -p tcp -m tcp --dport 801 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 802 -j ACCEPT
+
+#offer to jiankongbao
+-A INPUT -p tcp -s 60.195.252.106 --dport 3306 -j ACCEPT
+-A INPUT -p tcp -s 60.195.252.108 --dport 3306 -j ACCEPT
+
+-A INPUT -j DROP
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT

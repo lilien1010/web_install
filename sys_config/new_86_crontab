@@ -1,0 +1,38 @@
+#####################[ monitor status]###############################
+*/8 * * * * /home/swoole/checkserver/slave_status.php
+*/8 * * * * /home/swoole/checkserver/register_status.php   
+ 
+  
+
+
+###################[ search data update ]###########################
+*/45 * * * * /usr/local/sphinx/build_delta_dis_user.sh 
+30 4 * * * /usr/local/sphinx/build_dis_user.sh 
+0 0 */19 * * /usr/local/sphinx/bin/indexer --rotate city
+
+*/60 * * * * /home/swoole/Timer/searchCacheUser.php -fpoplang product   
+*/120 * * * * /home/swoole/Timer/searchCacheUser.php -frarelang product   
+*/30 * * * * /home/swoole/Timer/searchCacheUser.php -fmultilang -t1200 product   
+*/50 * * * * /home/swoole/Timer/searchCacheUser.php -fscore -t3000 product   
+0 0 */7 * * /home/swoole/Timer/searchCacheUser.php -f7dayscore product   
+*/5 * * * * /home/swoole/Timer/searchCacheUser.php -fapi_monitor -t3000 product   
+
+*/15 * * * *  /home/swoole/Timer/userCacheRepair.php -fall  product   
+*/15 * * * *  /home/swoole/Timer/userCacheRepair.php -fthreeDay product
+*/15 1-19 * * * /home/swoole/Timer/userCacheRepair.php -frepairProfileInfo -t270000  product   
+10 4 * * *  /home/swoole/Timer/userCacheRepair.php -foneday  product   
+
+30 5 * * * /home/swoole/Timer/dbRepair.php -fyestoday product
+*/25 * * * * /home/swoole/Timer/sphinxTimer.php product   
+ 
+
+##################[swoole Monitor]################
+
+*/4 * * * * /home/swoole/monitor/checkXinge.sh
+*/4 * * * * /home/swoole/monitor/checkQueueMsg.sh 
+*/2 * * * * /home/swoole/monitor/moniteNewRegHandle.sh 
+*/2 * * * * /home/swoole/monitor/moniteEmailSend.sh 
+*/2 * * * * /home/swoole/monitor/checkRedis.sh
+
+#modify timer
+0-59/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP 

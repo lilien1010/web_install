@@ -1,0 +1,99 @@
+#! /bin/sh
+# chkconfig: - 85 15
+# description: nginx is a World Wide Web server. It is used to serve
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the nginx web server
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin
+DESC="nginx daemon"
+NAME=nginx
+DAEMON=/usr/local/openresty/nginx/sbin/$NAME
+CONFIGFILE=/usr/local/openresty/nginx/conf/$NAME.conf
+PIDFILE=/usr/local/openresty/nginx/logs/$NAME.pid
+SCRIPTNAME=/etc/init.d/openresty
+
+if [ ! -x "$DAEMON" ] || [ ! -f "$CONFIGFILE" ]; then
+    echo -e "\033[33m $DAEMON has no permission to run. \033[0m"
+    echo -e "\033[33m Or $CONFIGFILE doesn't exist. \033[0m"
+    sleep 1
+    exit 1
+fi
+
+
+do_start() {
+	#$DAEMON -c $CONFIGFILE || echo -n "nginx already running"
+ 
+     if [ -e $PIDFILE ]; then
+        echo -e "\033[33m $PIDFILE already exists. \033[0m"
+        echo -e "\033[33m $DESC is already running or crashed. \033[0m"
+        echo -e "\033[32m $DESC Reopening $CONFIGFILE ... \033[0m"
+        $DAEMON -s reopen -c $CONFIGFILE
+        sleep 1
+        echo -e "\033[36m $DESC reopened. \033[0m"
+    else
+        echo -e "\033[32m $DESC Starting $CONFIGFILE ... \033[0m"
+        $DAEMON -c $CONFIGFILE
+        sleep 1
+        echo -e "\033[36m $DESC started. \033[0m"
+    fi
+	
+}
+
+do_stop() {
+    if [ ! -f $PIDFILE ]; then
+        echo -e "\033[33m $PIDFILE doesn't exist. \033[0m"
+        echo -e "\033[33m $DESC isn't running. \033[0m"
+    else
+        echo -e "\033[32m $DESC Stopping $CONFIGFILE ... \033[0m"
+        $DAEMON -s stop -c $CONFIGFILE
+        sleep 1
+        echo -e "\033[36m $DESC stopped. \033[0m"
+    fi
+}
+
+do_reload() {
+    if [ ! -f $PIDFILE ]; then
+        echo -e "\033[33m $PIDFILE doesn't exist. \033[0m"
+        echo -e "\033[33m $DESC isn't running. \033[0m"
+        echo -e "\033[32m $DESC Starting $CONFIGFILE ... \033[0m"
+        $DAEMON -c $CONFIGFILE
+        sleep 1
+        echo -e "\033[36m $DESC started. \033[0m"
+    else
+        echo -e "\033[32m $DESC Reloading $CONFIGFILE ... \033[0m"
+        $DAEMON -s reload -c $CONFIGFILE
+        sleep 1
+        echo -e "\033[36m $DESC reloaded. \033[0m"
+    fi
+}
+
+case "$1" in
+ start)
+ echo -n "Starting $DESC: $NAME"
+ do_start
+ echo "."
+ ;;
+ stop)
+ echo -n "Stopping $DESC: $NAME"
+ do_stop
+ echo "."
+ ;;
+ reload|graceful)
+ echo -n "Reloading $DESC configuration..."
+ do_reload
+ echo "."
+ ;;
+ restart)
+ echo -n "Restarting $DESC: $NAME"
+ do_stop
+ do_start
+ echo "."
+ ;;
+ *)
+ echo "Usage: $SCRIPTNAME {start|stop|reload|restart}" >&2
+ exit 3
+ ;;
+esac
+
+exit 0

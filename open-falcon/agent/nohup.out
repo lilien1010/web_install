@@ -1,0 +1,3 @@
+2018/02/05 11:28:15 cfg.go:121: read config file: cfg.json successfully
+2018/02/05 11:28:15 http.go:74: listening :1988
+2018/02/08 00:39:05 rpc.go:73: [WARN] rpc call timeout &{0xc2080ca500 {0 0} {Transfer.Update 11007 <nil>} {0 0} 11008 map[11007:0xc2080c71d0] false false} => 10.144.68.196:8433

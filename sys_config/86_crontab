@@ -1,0 +1,109 @@
+#####################[ monitor status]###############################
+*/8 * * * * /var/checkserver/slave_status.php
+*/8 * * * * /var/checkserver/register_status.php  
+#*/5 * * * * /var/checkserver/search_status.php
+*/2 * * * * /home/liling/checkRedis.sh
+#############[ back up ]###############################
+*/1 * * * *  /home/swoole/monitor/monitorIMServer.sh
+
+*/5 * * * * /bin/bash /var/htntshell/headbak.sh
+*/10 * * * * /bin/bash /var/htntshell/introvoc.sh
+*/1 * * * * /bin/bash /var/htntshell/packetprocess.sh
+
+
+###################[定时清理日志]######################
+0 */12 * * * /home/swoole/monitor/clear_log/delimlog.sh
+0 0 */5 * * /home/swoole/monitor/clear_log/clear_swoole_log.sh
+
+#back up sometable and move it to 218 server
+0 3 * * * /home/swoole/Timer/mydumper.sh 
+#######[每一个小时 86的mamcache写入好友和聊天数据]##############
+
+###################################################
+#
+#update geo & lang & userinfo in redis
+#
+####################################################
+
+
+###################[ search data update ]###########################
+*/45 * * * * /usr/local/sphinx/build_delta_dis_user.sh 
+30 4 * * * /usr/local/sphinx/build_dis_user.sh 
+0 0 */19 * * /usr/local/sphinx/bin/indexer --rotate city
+
+*/60 * * * * /home/swoole/Timer/searchCacheUser.php -fpoplang product   
+*/120 * * * * /home/swoole/Timer/searchCacheUser.php -frarelang product   
+*/30 * * * * /home/swoole/Timer/searchCacheUser.php -fmultilang -t1200 product   
+*/50 * * * * /home/swoole/Timer/searchCacheUser.php -fscore -t3000 product   
+0 0 */7 * * /home/swoole/Timer/searchCacheUser.php -f7dayscore product   
+*/5 * * * * /home/swoole/Timer/searchCacheUser.php -fapi_monitor -t3000 product   
+
+*/15 * * * *  /home/swoole/Timer/userCacheRepair.php -fall  product   
+*/15 * * * *  /home/swoole/Timer/userCacheRepair.php -fthreeDay product
+*/15 1-19 * * * /home/swoole/Timer/userCacheRepair.php -frepairProfileInfo -t270000  product   
+10 4 * * *  /home/swoole/Timer/userCacheRepair.php -foneday  product   
+
+30 5 * * * /home/swoole/Timer/dbRepair.php -fyestoday product
+*/25 * * * * /home/swoole/Timer/sphinxTimer.php product   
+
+*/3 * * * * /home/swoole/Timer/customerMsg.php product
+*/10 * * * * /home/swoole/Timer/mg_gather/rblackLog.php product
+#################[]###########################
+#30 8 * * * php /home/swoole/Timer/mg_gather/rblackchatLog.php  product 
+
+
+##################[swoole Monitor]################
+
+*/4 * * * * /home/swoole/monitor/checkXinge.sh
+*/4 * * * * /home/swoole/monitor/checkQueueMsg.sh
+##########################day week month DAU#############
+40 0 * * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -cretentionAnalysis  -frunYestoday product
+20 3 * * 0 /home/swoole/Timer/MgAnalysis/logAnalysis.php -cretentionAnalysis  -frunLastweek product 
+45 2 1 * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -cretentionAnalysis  -frunLastmonth product
+#3 3 2,10,15,20,25 * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -cretentionAnalysis  -frunThismonth product
+
+20 1 * * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -cDAUAnalysis  -fstart_daily product
+
+0 1 * * 0 /home/swoole/Timer/MgAnalysis/logAnalysis.php -cDAUAnalysis  -fstart_weekly product
+
+15 2 1 * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -cDAUAnalysis  -fmonth_reg product
+45 2 1 * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -cDAUAnalysis  -fmonth_login product
+
+########################### message log analysis  every day in 00:30
+30 2 * * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -c purchaseAnalysis -fall product  
+59 * * * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -c purchaseAnalysis -ftoday product
+0 3 * * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -c logAnalysis -fall product
+25 2 * * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -c countryLangAnalysis -fall product 
+0 8 1 * *  /home/swoole/Timer/MgAnalysis/logAnalysis.php -c countryLangAnalysis -fcalMonNationOnline product 
+0 7 1 * * /home/swoole/Timer/MgAnalysis/logAnalysis.php -c countryLangAnalysis -fcalMonNationReg product
+
+#每三十分钟 统计所有购买数据
+*/30 * * * *  /home/swoole/Timer/MgAnalysis/logAnalysis.php -c purchaseAnalysis -fpurchaseGroup product
+*/2 * * * * /home/swoole/monitor/moniteNewRegHandle.sh 
+*/2 * * * * /home/swoole/monitor/moniteEmailSend.sh 
+
+########################[ userplace & multilang place handle ]#############
+*/15 * * * *  /home/swoole/Timer/multilangList.php useronly saveUserLocation product
+0 */1 * * * /home/swoole/Timer/multilangList.php  multilang saveMultilang product
+
+########################[ update score in masterDB every 8 hour ]#############
+
+0 */8 * * * /bin/bash /home/swoole/Timer/update_score.sh
+
+#####handle imserver log
+*/10 * * * * /home/logs/server/changePermission.sh
+
+##############################################################
+#0 */23 * * * curl http://175.45.4.86/htmanagertest/IMServer/changeAndroidtoBing?crontab=1
+#*/10 * * * * curl http://175.45.4.86/htmanagertest/IMServer/setOnlineiOS?crontab=1
+*/10 * * * * curl http://175.45.4.86:8090/htmall/Todayinfo/get_registerinfo?crontab=1
+*/10 * * * * curl http://175.45.4.86:8090/htmall/Todayinfo/get_reg_lang_arr?crontab=1
+
+#modify timer
+0-59/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP
+
+############## compress IM Server Log############################
+############## 每天6点执行日志压缩##############################
+0 6 * * *  /bin/bash /home/songliwei/compress_imserver_log.sh 
+############# IMServer 自动拉起脚本 没分中检测一次##############
+*/1 * * * * /bin/bash /home/songliwei/im_server_monitor_86.sh >/dev/null 2>&1

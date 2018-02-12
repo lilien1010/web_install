@@ -1,0 +1,3 @@
+2018/02/08 15:04:04 cfg.go:121: read config file: cfg.json successfully
+2018/02/08 15:04:04 http.go:74: listening :1988
+2018/02/08 15:04:04 http.go:75: listen tcp :1988: bind: address already in use
