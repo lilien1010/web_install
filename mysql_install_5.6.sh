@@ -20,6 +20,9 @@ fi
 cur_dir=$(cd "$(dirname "$0")"; pwd)
 
 data_dir=/htdata/mysql
+
+mkdir -p $data_dir
+
 src_dir=/usr/local/src
 bin_dir=/usr/local/mysql
 yum install -y git wget
