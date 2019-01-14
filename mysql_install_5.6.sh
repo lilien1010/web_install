@@ -88,4 +88,4 @@ if [ $mysql_bin_cnt -gt 0 ] ; then
 	echo 'export PATH=$PATH:/usr/local/mysql/bin' >> /etc/profile
 	source /etc/profile
 fi
-mysql -u root -p -e "SET PASSWORD FOR 'root'@'localhost'=PASSWORD('123456');"
+mysql -u root -p -e "SET PASSWORD FOR 'root'@'localhost'=PASSWORD('fake123456');"
